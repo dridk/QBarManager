@@ -13,8 +13,10 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp
+        mainwindow.cpp \
+    blackberrymanager.cpp
 
-HEADERS  += mainwindow.h
+HEADERS  += mainwindow.h \
+    blackberrymanager.h
 
 FORMS    += mainwindow.ui
