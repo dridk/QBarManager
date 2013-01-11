@@ -3,6 +3,8 @@
 
 #include <QMainWindow>
 #include <QProcess>
+#include <QLineEdit>
+#include "blackberrymanager.h"
 namespace Ui {
 class MainWindow;
 }
@@ -16,12 +18,26 @@ public:
     ~MainWindow();
 
 public slots:
-    void action();
-    void loadText();
-    
+    void connection();
+    void showBlackBerryDeployDialog();
+    void setDeviceInfo(const QVariantMap& data);
+
+protected:
+    void init();
+    void loadSettings();
+
+
 private:
+    BlackberryManager * mManager;
     Ui::MainWindow *ui;
-    QProcess  * mProcess;
+    QLineEdit * mIpComboBox;
+    QLineEdit * mPasswordBox;
+    QAction * mConnectAction;
+    QAction * mAddAction;
+    QAction * mRemAction;
+    QAction * mInstallAction;
+    QAction * mUnInstallAction;
+
 };
 
 #endif // MAINWINDOW_H
