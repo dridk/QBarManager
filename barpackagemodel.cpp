@@ -1,5 +1,5 @@
 #include "barpackagemodel.h"
-
+#include <QDebug>
 BarPackageModel::BarPackageModel(QObject *parent) :
     QStandardItemModel(parent)
 {
@@ -25,7 +25,10 @@ foreach ( QVariant item, datas)
     QString version =item.toMap().value("version").toString();
 
 
-    QStringList names = rawName.split(".");
+    QStringList names = rawName.remove(id.replace("-",".")).split(".");
+
+
+
 
     QString name = names[names.length()-2];
 

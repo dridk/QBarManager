@@ -184,7 +184,6 @@ void BlackberryManager::parseListInstalledApps()
     }
 
 
-    qDebug()<<mInstalledApps;
 
 }
 
