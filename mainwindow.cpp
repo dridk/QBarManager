@@ -1,3 +1,4 @@
+
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QProcess>
@@ -159,6 +160,9 @@ void MainWindow::init()
     mProgressLabel = new QLabel;
 
 
+
+    mPasswordBox->setEchoMode(QLineEdit::Password);
+    //mIpComboBox->setValidator(new QRegExpValidator(QRegExp("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$")));
 
 
     QMovie * loading = new QMovie(":loading.gif");
