@@ -118,6 +118,9 @@ void MainWindow::loadData(const QVariantList &data)
     mModel->load(data);
 
 
+    ui->tableView->horizontalHeader()->setResizeMode(0,QHeaderView::Stretch);
+    ui->tableView->horizontalHeader()->setResizeMode(1,QHeaderView::Stretch);
+
 
 }
 
@@ -143,6 +146,9 @@ void MainWindow::init()
     mIpComboBox = new QLineEdit;
     mPasswordBox = new QLineEdit;
     mProgressLabel = new QLabel;
+
+
+
 
     QMovie * loading = new QMovie(":loading.gif");
     mProgressLabel->setMovie(loading);
@@ -175,7 +181,6 @@ void MainWindow::init()
 
 
     addToolBar(mToolBar);
-
 
 
     loadSettings();
