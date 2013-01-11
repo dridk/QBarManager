@@ -32,7 +32,7 @@ void BlackberryManager::installApp(const QString &package, bool launchAfter)
         arguments <<"-installApp"<<mIpAddress<<"-password"<<mPassworld<<package;
         qDebug()<<mProgram<<arguments.join(" ");
         mCurrentAction = "installApp";
-        mProcess->start(mProgram,arguments);
+        mProcess->start(QDir::fromNativeSeparators(mProgram),arguments);
 
 
     }
@@ -46,7 +46,7 @@ void BlackberryManager::launchApp(const QString &package)
         arguments <<"-launchApp"<<mIpAddress<<"-password"<<mPassworld<<"-package-fullname"<<package;
         qDebug()<<mProgram<<arguments.join(" ");
         mCurrentAction = "launchApp";
-        mProcess->start(mProgram,arguments);
+        mProcess->start(QDir::fromNativeSeparators(mProgram),arguments);
 
 
     }
@@ -60,7 +60,7 @@ void BlackberryManager::uninstallApp(const QString &package)
         arguments <<"-uninstallApp"<<mIpAddress<<"-password"<<mPassworld<<"-package-fullname"<<package;
         qDebug()<<mProgram<<arguments.join(" ");
         mCurrentAction = "uninstallApp";
-        mProcess->start(mProgram,arguments);
+        mProcess->start(QDir::fromNativeSeparators(mProgram),arguments);
     }
 
 }
@@ -101,7 +101,7 @@ void BlackberryManager::listInstalledApps()
         arguments << "-listInstalledApps"<<mIpAddress<<"-password"<<mPassworld;
         mCurrentAction = "listInstalledApps";
         qDebug()<<mProgram<<arguments.join(" ");
-        mProcess->start(mProgram,arguments);
+        mProcess->start(QDir::fromNativeSeparators(mProgram),arguments);
     }
 }
 

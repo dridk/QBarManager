@@ -7,8 +7,8 @@ int main(int argc, char *argv[])
 
     QCoreApplication::setOrganizationName("labsquare");
     QCoreApplication::setOrganizationDomain("labsquare.org");
-    QCoreApplication::setApplicationName("qbar");
-
+    QCoreApplication::setApplicationName("qbarmanager");
+    QCoreApplication::setApplicationVersion("0.0.1");
     MainWindow w;
     w.show();
     

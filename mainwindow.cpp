@@ -27,6 +27,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(mUnInstallAction,SIGNAL(triggered()),this,SLOT(remPackage()));
     connect(mRunAction,SIGNAL(triggered()),this,SLOT(launchApp()));
     connect(mManager,SIGNAL(isProcessing(bool)),this,SLOT(setProcessing(bool)));
+    connect(ui->actionAbout_Qt,SIGNAL(triggered()),qApp,SLOT(aboutQt()));
 
 
 }
@@ -167,6 +168,10 @@ void MainWindow::init()
     mInstallAction = mToolBar->addAction(QIcon(":install.png"),"install(s)");
     mUnInstallAction = mToolBar->addAction(QIcon(":uninstall.png"),"UnInstall(s)");
     mRunAction = mToolBar->addAction(QIcon(":run.png"),"launch");
+
+    ui->menuFile->addAction(mInstallAction);
+    ui->menuFile->addAction(mUnInstallAction);
+    ui->menuFile->addAction(mRunAction);
 
 
     addToolBar(mToolBar);
