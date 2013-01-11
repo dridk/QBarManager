@@ -34,11 +34,13 @@ protected slots:
     void parseListDeviceInfo();
     void parseListInstalledApps();
     void finished(int exitCode);
-    void clearReceivedBuffer();
+    void started();
 
 signals:
     void deviceInfoReceived(const QVariantMap& data);
+    void installedAppsReceived(const QVariantList& data);
     void errorReceived(int code, const QString& message);
+    void isProcessing(bool active);
 
 
 private:
@@ -47,6 +49,7 @@ private:
     QString mProgram;
     QProcess * mProcess;
     QVariantMap mDeviceInfo;
+    QVariantList mInstalledApps;
     QByteArray mReceivedBuffer;
     QString mCurrentAction;
 

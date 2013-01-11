@@ -2,6 +2,7 @@
 #include <QDebug>
 #include <QFile>
 #include <QDir>
+#include <QRegExp>
 BlackberryManager::BlackberryManager(QObject *parent) :
     QObject(parent)
 {
@@ -10,7 +11,7 @@ BlackberryManager::BlackberryManager(QObject *parent) :
     connect(mProcess,SIGNAL(readyReadStandardOutput()),this,SLOT(parseStandardOutput()));
     connect(mProcess,SIGNAL(readyReadStandardError()),this,SLOT(parseStandardError()));
     connect(mProcess,SIGNAL(finished(int)),this,SLOT(finished(int)));
-    connect(mProcess,SIGNAL(started()),this,SLOT(clearReceivedBuffer()));
+    connect(mProcess,SIGNAL(started()),this,SLOT(started()));
 
 }
 
@@ -39,6 +40,16 @@ void BlackberryManager::installApp(const QString &package, bool launchAfter)
 
 void BlackberryManager::launchApp(const QString &package)
 {
+    if (mCurrentAction.isEmpty())
+    {
+        QStringList arguments;
+        arguments <<"-launchApp"<<mIpAddress<<"-password"<<mPassworld<<"-package-fullname"<<package;
+        qDebug()<<mProgram<<arguments.join(" ");
+        mCurrentAction = "launchApp";
+        mProcess->start(mProgram,arguments);
+
+
+    }
 }
 
 void BlackberryManager::uninstallApp(const QString &package)
@@ -46,7 +57,7 @@ void BlackberryManager::uninstallApp(const QString &package)
     if (mCurrentAction.isEmpty())
     {
         QStringList arguments;
-        arguments <<"-uninstallApp"<<mIpAddress<<"-password"<<mPassworld<<package;
+        arguments <<"-uninstallApp"<<mIpAddress<<"-password"<<mPassworld<<"-package-fullname"<<package;
         qDebug()<<mProgram<<arguments.join(" ");
         mCurrentAction = "uninstallApp";
         mProcess->start(mProgram,arguments);
@@ -117,6 +128,7 @@ void BlackberryManager::parseStandardError()
     qDebug()<<mProcess->error();
     QString raw = mProcess->readAllStandardError();
     emit errorReceived(mProcess->error(), raw);
+    emit isProcessing(false);
 
 
 }
@@ -142,37 +154,73 @@ void BlackberryManager::parseListInstalledApps()
 
     qDebug()<<"parse listInfoInstalled";
     QString raw = mReceivedBuffer;
+    mInstalledApps.clear();
     foreach (QString line, raw.split("\n"))
     {
+        if ( line.contains(QRegExp("^.*::")))
+        {
+            QStringList splits = line.split(",");
+            QVariantMap data;
+            for (int i=0;  i< splits.count(); i++)
+            {
 
 
+                if ( i == 0)
+                {
+                    data["name"] = splits[i].section("::",0,0);
+                    data["id"] = splits[i].section("::",1,1);
+
+
+                }
+
+                if (i==1 )
+                    data["version"] = splits[i];
+            }
+
+            mInstalledApps.append(data);
+
+        }
 
     }
+
+
+    qDebug()<<mInstalledApps;
 
 }
 
 void BlackberryManager::finished(int exitCode)
 {
+    QString oldAction = mCurrentAction;
+    mCurrentAction.clear();
+
     if(!exitCode)
     {
 
-        if (mCurrentAction == "listDeviceInfo")
+        if (oldAction == "listDeviceInfo")
         {
             parseListDeviceInfo();
             emit deviceInfoReceived(mDeviceInfo);
+
         }
 
-        if ( mCurrentAction == "listInstalledApps")
+        if ( oldAction == "listInstalledApps")
         {
             parseListInstalledApps();
+            emit installedAppsReceived(mInstalledApps);
         }
 
+        if ( oldAction == "installApp" || oldAction == "uninstallApp")
+            listInstalledApps();
+
     }
-    mCurrentAction.clear();
+
+    emit isProcessing(false);
+
 
 }
 
-void BlackberryManager::clearReceivedBuffer()
+void BlackberryManager::started()
 {
     mReceivedBuffer.clear();
+    emit isProcessing(true);
 }

@@ -4,6 +4,9 @@
 #include <QMainWindow>
 #include <QProcess>
 #include <QLineEdit>
+#include <QStringListModel>
+#include <QLabel>
+#include <QProgressBar>
 #include "blackberrymanager.h"
 #include "barpackagemodel.h"
 namespace Ui {
@@ -25,6 +28,11 @@ public slots:
     void showError(int error, const QString& message);
     void addPackage();
     void remPackage();
+    void loadData(const QVariantList& data);
+    void launchApp();
+
+protected slots:
+    void setProcessing(bool processing);
 
 
 protected:
@@ -35,12 +43,14 @@ protected:
 private:
     BlackberryManager * mManager;
     BarPackageModel * mModel;
+    QStringListModel mTempModel; // just for testing
     Ui::MainWindow *ui;
+    QToolBar * mToolBar;
+    QLabel * mProgressLabel;
     QLineEdit * mIpComboBox;
     QLineEdit * mPasswordBox;
     QAction * mConnectAction;
-    QAction * mAddAction;
-    QAction * mRemAction;
+    QAction * mRunAction;
     QAction * mInstallAction;
     QAction * mUnInstallAction;
 

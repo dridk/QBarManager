@@ -8,10 +8,10 @@ class BarPackageModel : public QStandardItemModel
     Q_OBJECT
 public:
     explicit BarPackageModel(QObject *parent = 0);
-    
-signals:
-    
-public slots:
+
+    void load(const QVariantList& datas);
+
+
     
 };
 

@@ -8,6 +8,8 @@
 #include <QSettings>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QMovie>
+#include <QLabel>
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -20,8 +22,12 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(mConnectAction,SIGNAL(triggered()),this,SLOT(connection()));
     connect(mManager,SIGNAL(deviceInfoReceived(QVariantMap)),this,SLOT(setDeviceInfo(QVariantMap)));
     connect(mManager,SIGNAL(errorReceived(int,QString)),this,SLOT(showError(int,QString)));
-    connect(mAddAction,SIGNAL(triggered()),this,SLOT(addPackage()));
-    connect(mRemAction,SIGNAL(triggered()),this,SLOT(remPackage()));
+    connect(mManager,SIGNAL(installedAppsReceived(QVariantList)),this,SLOT(loadData(QVariantList)));
+    connect(mInstallAction,SIGNAL(triggered()),this,SLOT(addPackage()));
+    connect(mUnInstallAction,SIGNAL(triggered()),this,SLOT(remPackage()));
+    connect(mRunAction,SIGNAL(triggered()),this,SLOT(launchApp()));
+    connect(mManager,SIGNAL(isProcessing(bool)),this,SLOT(setProcessing(bool)));
+
 
 }
 
@@ -61,7 +67,8 @@ void MainWindow::setDeviceInfo(const QVariantMap &data)
 {
 
 
-        statusBar()->showMessage(QString("Connected with  %1 %2").arg(data["modelfullname"].toString()).arg(data["flash_version"].toString()));
+    statusBar()->showMessage(QString("Connected with  %1 %2").arg(data["modelfullname"].toString()).arg(data["flash_version"].toString()));
+    mManager->listInstalledApps();
 
 
 
@@ -77,11 +84,14 @@ void MainWindow::showError(int error, const QString &message)
 void MainWindow::addPackage()
 {
 
-  //  QString path = QFileDialog::getOpenFileName(this,"package");
-  //  mManager->installApp(path);
+    QString path = QFileDialog::getOpenFileName(this,"bar package","","Bar Package (*.bar)");
+    if (!path.isEmpty())
+    {
+        mManager->installApp(path);
+
+    }
 
 
-    mManager->listInstalledApps();
 
 
 
@@ -89,8 +99,37 @@ void MainWindow::addPackage()
 
 void MainWindow::remPackage()
 {
-    QString path = QFileDialog::getOpenFileName(this,"package");
-    mManager->uninstallApp(path);
+
+    if ( ui->tableView->selectionModel()->selectedRows().isEmpty())
+        return;
+
+    QStandardItem * item = mModel->item(ui->tableView->currentIndex().row());
+    QString package = item->data().toMap().value("name").toString();
+    mManager->uninstallApp(package);
+
+
+}
+
+void MainWindow::loadData(const QVariantList &data)
+{
+
+
+    mModel->load(data);
+
+
+
+}
+
+void MainWindow::launchApp()
+{
+
+    if ( ui->tableView->selectionModel()->selectedRows().isEmpty())
+        return;
+
+    QStandardItem * item = mModel->item(ui->tableView->currentIndex().row());
+    QString package = item->data().toMap().value("name").toString();
+    mManager->launchApp(package);
+
 
 
 }
@@ -99,27 +138,38 @@ void MainWindow::init()
 {
 
     ui->tableView->setModel(mModel);
-
+    mToolBar = new QToolBar;
     mIpComboBox = new QLineEdit;
     mPasswordBox = new QLineEdit;
+    mProgressLabel = new QLabel;
 
+    QMovie * loading = new QMovie(":loading.gif");
+    mProgressLabel->setMovie(loading);
+    loading->start();
+
+    mProgressLabel->setVisible(false);
+
+
+    statusBar()->addPermanentWidget(mProgressLabel);
     mIpComboBox->setPlaceholderText("IP address");
     mPasswordBox->setPlaceholderText("Password");
 
     mIpComboBox->setSizePolicy(QSizePolicy(QSizePolicy::Minimum,QSizePolicy::Minimum));
     mPasswordBox->setSizePolicy(QSizePolicy(QSizePolicy::Minimum,QSizePolicy::Minimum));
 
-    QToolBar * toolbar = new QToolBar;
-    toolbar->addWidget(mIpComboBox);
-    toolbar->addWidget(mPasswordBox);
-    mConnectAction = toolbar->addAction("connect");
-    toolbar->addSeparator();
-    mAddAction = toolbar->addAction("Add bar");
-    mRemAction = toolbar->addAction("Remove bar");
-    mInstallAction = toolbar->addAction("install(s)");
-    mUnInstallAction = toolbar->addAction("UnInstall(s)");
+    mToolBar->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    mToolBar->setIconSize(QSize(16,16));
+    mToolBar->addWidget(mIpComboBox);
+    mToolBar->addWidget(mPasswordBox);
+    mConnectAction = mToolBar->addAction(QIcon(":refresh.png"),"connect");
+    mToolBar->addSeparator();
 
-    addToolBar(toolbar);
+    mInstallAction = mToolBar->addAction(QIcon(":install.png"),"install(s)");
+    mUnInstallAction = mToolBar->addAction(QIcon(":uninstall.png"),"UnInstall(s)");
+    mRunAction = mToolBar->addAction(QIcon(":run.png"),"launch");
+
+
+    addToolBar(mToolBar);
 
 
 
@@ -139,4 +189,13 @@ void MainWindow::loadSettings()
 
 
 }
+
+void MainWindow::setProcessing(bool processing)
+{
+    mToolBar->setEnabled(!processing);
+    ui->tableView->setEnabled(!processing);
+    mProgressLabel->setVisible(processing);
+}
+
+
 

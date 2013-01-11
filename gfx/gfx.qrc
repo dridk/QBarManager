@@ -1,0 +1,17 @@
+<RCC>
+    <qresource prefix="/">
+        <file>bug.png</file>
+        <file>github.png</file>
+        <file>help.png</file>
+        <file>install.png</file>
+        <file>linux.png</file>
+        <file>mac.png</file>
+        <file>refresh.png</file>
+        <file>run.png</file>
+        <file>windows.png</file>
+        <file>uninstall.png</file>
+        <file>app.png</file>
+        <file>watch.png</file>
+        <file>loading.gif</file>
+    </qresource>
+</RCC>

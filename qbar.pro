@@ -22,3 +22,6 @@ HEADERS  += mainwindow.h \
     barpackagemodel.h
 
 FORMS    += mainwindow.ui
+
+RESOURCES += \
+    gfx/gfx.qrc

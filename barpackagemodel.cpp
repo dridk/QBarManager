@@ -4,12 +4,59 @@ BarPackageModel::BarPackageModel(QObject *parent) :
     QStandardItemModel(parent)
 {
 
-setColumnCount(3);
 
-QStandardItem * item =new QStandardItem;
-item->setText("Watch.bar");
 
-appendRow(item);
+
+
+}
+
+void BarPackageModel::load(const QVariantList &datas)
+{
+clear();
+setHorizontalHeaderLabels(QStringList()<<"application"<<"version");
+
+
+foreach ( QVariant item, datas)
+{
+
+
+    QString rawName =item.toMap().value("name").toString();
+    QString id =item.toMap().value("id").toString();
+    QString version =item.toMap().value("version").toString();
+
+
+    QStringList names = rawName.split(".");
+
+    QString name = names[names.length()-2];
+
+    QStandardItem * nameItem = new QStandardItem(0);
+    nameItem->setData(item);
+    nameItem->setText(name);
+    nameItem->setIcon(QIcon(":app.png"));
+    if (rawName.contains("sys"))
+    nameItem->setEnabled(false);
+
+    QStandardItem * versionItem = new QStandardItem(1);
+    versionItem->setText(version);
+
+    QList<QStandardItem*> items;
+    items.append(nameItem);
+    items.append(versionItem);
+
+    appendRow(items);
+
+
+
+
+}
+
+
+
+
+
+
+
+
 
 
 }
