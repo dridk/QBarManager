@@ -1,6 +1,7 @@
 #include "blackberrymanager.h"
 #include <QDebug>
 #include <QFile>
+#include <QDir>
 BlackberryManager::BlackberryManager(QObject *parent) :
     QObject(parent)
 {
@@ -24,10 +25,16 @@ bool BlackberryManager::setBlackberryDeployPath(const QString &path)
 
 void BlackberryManager::installApp(const QString &package, bool launchAfter)
 {
-    QStringList arguments;
-    arguments <<"-installApp"<<mIpAddress<<"-password"<<mPassworld<<package;
-    qDebug()<<mProgram<<arguments.join(" ");
-    mProcess->start(mProgram,arguments);
+    if (mCurrentAction.isEmpty())
+    {
+        QStringList arguments;
+        arguments <<"-installApp"<<mIpAddress<<"-password"<<mPassworld<<package;
+        qDebug()<<mProgram<<arguments.join(" ");
+        mCurrentAction = "installApp";
+        mProcess->start(mProgram,arguments);
+
+
+    }
 }
 
 void BlackberryManager::launchApp(const QString &package)
@@ -78,6 +85,13 @@ QVariantMap BlackberryManager::deviceInfo() const
 
 void BlackberryManager::listInstalledApps()
 {
+    if (mCurrentAction.isEmpty()){
+        QStringList arguments;
+        arguments << "-listInstalledApps"<<mIpAddress<<"-password"<<mPassworld;
+        mCurrentAction = "listInstalledApps";
+        qDebug()<<mProgram<<arguments.join(" ");
+        mProcess->start(mProgram,arguments);
+    }
 }
 
 void BlackberryManager::listDeviceInfo()
@@ -87,7 +101,7 @@ void BlackberryManager::listDeviceInfo()
         arguments << "-listDeviceInfo"<<mIpAddress<<"-password"<<mPassworld;
         mCurrentAction = "listDeviceInfo";
         qDebug()<<mProgram<<arguments.join(" ");
-        mProcess->start(mProgram,arguments);
+        mProcess->start(QDir::fromNativeSeparators(mProgram),arguments);
     }
 
 }
@@ -123,6 +137,20 @@ void BlackberryManager::parseListDeviceInfo()
 
 }
 
+void BlackberryManager::parseListInstalledApps()
+{
+
+    qDebug()<<"parse listInfoInstalled";
+    QString raw = mReceivedBuffer;
+    foreach (QString line, raw.split("\n"))
+    {
+
+
+
+    }
+
+}
+
 void BlackberryManager::finished(int exitCode)
 {
     if(!exitCode)
@@ -132,6 +160,11 @@ void BlackberryManager::finished(int exitCode)
         {
             parseListDeviceInfo();
             emit deviceInfoReceived(mDeviceInfo);
+        }
+
+        if ( mCurrentAction == "listInstalledApps")
+        {
+            parseListInstalledApps();
         }
 
     }

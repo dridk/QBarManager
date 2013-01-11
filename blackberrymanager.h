@@ -32,12 +32,14 @@ protected slots:
     void parseStandardOutput();
     void parseStandardError();
     void parseListDeviceInfo();
+    void parseListInstalledApps();
     void finished(int exitCode);
     void clearReceivedBuffer();
 
 signals:
     void deviceInfoReceived(const QVariantMap& data);
     void errorReceived(int code, const QString& message);
+
 
 private:
     QString mIpAddress;
@@ -47,7 +49,6 @@ private:
     QVariantMap mDeviceInfo;
     QByteArray mReceivedBuffer;
     QString mCurrentAction;
-    bool mError;
 
 
 

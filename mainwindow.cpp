@@ -77,10 +77,11 @@ void MainWindow::showError(int error, const QString &message)
 void MainWindow::addPackage()
 {
 
-    QString path = QFileDialog::getOpenFileName(this,"package");
-    mManager->installApp(path);
+  //  QString path = QFileDialog::getOpenFileName(this,"package");
+  //  mManager->installApp(path);
 
 
+    mManager->listInstalledApps();
 
 
 
