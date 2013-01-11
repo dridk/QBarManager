@@ -10,6 +10,8 @@
 #include <QMessageBox>
 #include <QMovie>
 #include <QLabel>
+#include <QUrl>
+#include <QDesktopServices>
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -28,6 +30,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(mRunAction,SIGNAL(triggered()),this,SLOT(launchApp()));
     connect(mManager,SIGNAL(isProcessing(bool)),this,SLOT(setProcessing(bool)));
     connect(ui->actionAbout_Qt,SIGNAL(triggered()),qApp,SLOT(aboutQt()));
+    connect(mGithubAction,SIGNAL(triggered()),this,SLOT(openGithub()));
 
 
 }
@@ -138,6 +141,13 @@ void MainWindow::launchApp()
 
 }
 
+void MainWindow::openGithub()
+{
+
+    QDesktopServices::openUrl(QUrl("https://github.com/dridk/QBarManager"));
+
+}
+
 void MainWindow::init()
 {
 
@@ -174,6 +184,7 @@ void MainWindow::init()
     mInstallAction = mToolBar->addAction(QIcon(":install.png"),"install(s)");
     mUnInstallAction = mToolBar->addAction(QIcon(":uninstall.png"),"UnInstall(s)");
     mRunAction = mToolBar->addAction(QIcon(":run.png"),"launch");
+    mGithubAction = ui->menuHelp->addAction(QIcon(":github.png"),"Feedback");
 
     ui->menuFile->addAction(mInstallAction);
     ui->menuFile->addAction(mUnInstallAction);

@@ -30,6 +30,7 @@ public slots:
     void remPackage();
     void loadData(const QVariantList& data);
     void launchApp();
+    void openGithub();
 
 protected slots:
     void setProcessing(bool processing);
@@ -53,6 +54,7 @@ private:
     QAction * mRunAction;
     QAction * mInstallAction;
     QAction * mUnInstallAction;
+    QAction * mGithubAction;
 
 };
 
