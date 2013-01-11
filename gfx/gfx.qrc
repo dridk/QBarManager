@@ -13,5 +13,6 @@
         <file>app.png</file>
         <file>watch.png</file>
         <file>loading.gif</file>
+        <file>bg.png</file>
     </qresource>
 </RCC>

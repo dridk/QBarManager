@@ -119,10 +119,11 @@ void MainWindow::loadData(const QVariantList &data)
 
 
     mModel->load(data);
-
-
     ui->tableView->horizontalHeader()->setResizeMode(0,QHeaderView::Stretch);
     ui->tableView->horizontalHeader()->setResizeMode(1,QHeaderView::Stretch);
+
+    ui->tableView->setStyleSheet("");
+
 
 
 }
@@ -192,6 +193,7 @@ void MainWindow::init()
 
 
     addToolBar(mToolBar);
+    ui->tableView->setStyleSheet("QTableView {background-image:url(:bg.png); background-repeat:none;background-position:center center;background-color:white}");
 
 
     loadSettings();
