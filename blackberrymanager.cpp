@@ -25,7 +25,8 @@ bool BlackberryManager::setBlackberryDeployPath(const QString &path)
 void BlackberryManager::installApp(const QString &package, bool launchAfter)
 {
     QStringList arguments;
-    arguments << "-listDeviceInfo"<<mIpAddress<<"-password"<<mPassworld;
+    arguments <<"-installApp"<<mIpAddress<<"-password"<<mPassworld<<package;
+    qDebug()<<mProgram<<arguments.join(" ");
     mProcess->start(mProgram,arguments);
 }
 
@@ -35,6 +36,15 @@ void BlackberryManager::launchApp(const QString &package)
 
 void BlackberryManager::uninstallApp(const QString &package)
 {
+    if (mCurrentAction.isEmpty())
+    {
+        QStringList arguments;
+        arguments <<"-uninstallApp"<<mIpAddress<<"-password"<<mPassworld<<package;
+        qDebug()<<mProgram<<arguments.join(" ");
+        mCurrentAction = "uninstallApp";
+        mProcess->start(mProgram,arguments);
+    }
+
 }
 
 void BlackberryManager::terminateApp(const QString &package)
@@ -76,6 +86,7 @@ void BlackberryManager::listDeviceInfo()
         QStringList arguments;
         arguments << "-listDeviceInfo"<<mIpAddress<<"-password"<<mPassworld;
         mCurrentAction = "listDeviceInfo";
+        qDebug()<<mProgram<<arguments.join(" ");
         mProcess->start(mProgram,arguments);
     }
 
@@ -89,13 +100,16 @@ void BlackberryManager::parseStandardOutput()
 void BlackberryManager::parseStandardError()
 {
 
-    qDebug()<<mProcess->readAllStandardError();
+    qDebug()<<mProcess->error();
+    QString raw = mProcess->readAllStandardError();
+    emit errorReceived(mProcess->error(), raw);
 
 
 }
 
 void BlackberryManager::parseListDeviceInfo()
 {
+    qDebug()<<"parse listDeviceInfo";
     QString raw = mReceivedBuffer;
     mDeviceInfo.clear();
     foreach (QString line, raw.split("\n"))
@@ -107,23 +121,21 @@ void BlackberryManager::parseListDeviceInfo()
             mDeviceInfo[key] = value;
     }
 
-
-    emit deviceInfoReceived(mDeviceInfo);
-
 }
 
 void BlackberryManager::finished(int exitCode)
 {
-    if (mCurrentAction == "listDeviceInfo")
-        parseListDeviceInfo();
+    if(!exitCode)
+    {
 
+        if (mCurrentAction == "listDeviceInfo")
+        {
+            parseListDeviceInfo();
+            emit deviceInfoReceived(mDeviceInfo);
+        }
 
-
-
-
+    }
     mCurrentAction.clear();
-
-
 
 }
 

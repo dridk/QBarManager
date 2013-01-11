@@ -7,23 +7,29 @@
 #include <QToolBar>
 #include <QSettings>
 #include <QFileDialog>
+#include <QMessageBox>
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     mManager = new BlackberryManager;
+    mModel = new BarPackageModel;
 
     ui->setupUi(this);
     init();
     connect(mConnectAction,SIGNAL(triggered()),this,SLOT(connection()));
     connect(mManager,SIGNAL(deviceInfoReceived(QVariantMap)),this,SLOT(setDeviceInfo(QVariantMap)));
-
+    connect(mManager,SIGNAL(errorReceived(int,QString)),this,SLOT(showError(int,QString)));
+    connect(mAddAction,SIGNAL(triggered()),this,SLOT(addPackage()));
+    connect(mRemAction,SIGNAL(triggered()),this,SLOT(remPackage()));
 
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+    delete mManager;
+    delete mModel;
 }
 
 void MainWindow::connection()
@@ -55,7 +61,35 @@ void MainWindow::setDeviceInfo(const QVariantMap &data)
 {
 
 
-    statusBar()->showMessage(QString("Connected with  %1 %2").arg(data["modelfullname"].toString()).arg(data["flash_version"].toString()));
+        statusBar()->showMessage(QString("Connected with  %1 %2").arg(data["modelfullname"].toString()).arg(data["flash_version"].toString()));
+
+
+
+}
+
+void MainWindow::showError(int error, const QString &message)
+{
+
+    QMessageBox::critical(this,"error happens",message);
+
+}
+
+void MainWindow::addPackage()
+{
+
+    QString path = QFileDialog::getOpenFileName(this,"package");
+    mManager->installApp(path);
+
+
+
+
+
+}
+
+void MainWindow::remPackage()
+{
+    QString path = QFileDialog::getOpenFileName(this,"package");
+    mManager->uninstallApp(path);
 
 
 }
@@ -63,6 +97,7 @@ void MainWindow::setDeviceInfo(const QVariantMap &data)
 void MainWindow::init()
 {
 
+    ui->tableView->setModel(mModel);
 
     mIpComboBox = new QLineEdit;
     mPasswordBox = new QLineEdit;

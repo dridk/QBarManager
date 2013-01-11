@@ -14,7 +14,6 @@ public:
     bool isAppRunning(const QString& package);
     void setIpAddress(const QString& ip);
     void setPassword(const QString& password);
-
     const QString& blackberryDeployPath() const;
     QVariantMap deviceInfo() const;
 
@@ -38,6 +37,7 @@ protected slots:
 
 signals:
     void deviceInfoReceived(const QVariantMap& data);
+    void errorReceived(int code, const QString& message);
 
 private:
     QString mIpAddress;
@@ -47,6 +47,7 @@ private:
     QVariantMap mDeviceInfo;
     QByteArray mReceivedBuffer;
     QString mCurrentAction;
+    bool mError;
 
 
 

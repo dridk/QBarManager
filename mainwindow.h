@@ -5,6 +5,7 @@
 #include <QProcess>
 #include <QLineEdit>
 #include "blackberrymanager.h"
+#include "barpackagemodel.h"
 namespace Ui {
 class MainWindow;
 }
@@ -21,6 +22,10 @@ public slots:
     void connection();
     void showBlackBerryDeployDialog();
     void setDeviceInfo(const QVariantMap& data);
+    void showError(int error, const QString& message);
+    void addPackage();
+    void remPackage();
+
 
 protected:
     void init();
@@ -29,6 +34,7 @@ protected:
 
 private:
     BlackberryManager * mManager;
+    BarPackageModel * mModel;
     Ui::MainWindow *ui;
     QLineEdit * mIpComboBox;
     QLineEdit * mPasswordBox;

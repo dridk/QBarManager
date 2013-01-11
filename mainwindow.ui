@@ -16,7 +16,17 @@
   <widget class="QWidget" name="centralWidget">
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <widget class="QListView" name="listView"/>
+     <widget class="QTableView" name="tableView">
+      <property name="alternatingRowColors">
+       <bool>true</bool>
+      </property>
+      <property name="sortingEnabled">
+       <bool>true</bool>
+      </property>
+      <attribute name="horizontalHeaderStretchLastSection">
+       <bool>true</bool>
+      </attribute>
+     </widget>
     </item>
    </layout>
   </widget>
